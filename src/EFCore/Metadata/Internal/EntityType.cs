@@ -3313,12 +3313,12 @@ public class EntityType : TypeBase, IMutableEntityType, IConventionEntityType, I
         if (((property == null && BaseType == null)
                 || (property != null && !property.ClrType.IsInstanceOfType(((IReadOnlyEntityType)this).GetDiscriminatorValue()))))
         {
-            RemoveDiscriminatorValue(this, configurationSource);
+            ((IMutableEntityType)this).RemoveDiscriminatorValue();
             if (BaseType == null)
             {
                 foreach (var derivedType in GetDerivedTypes())
                 {
-                    RemoveDiscriminatorValue(derivedType, configurationSource);
+                    ((IMutableEntityType)derivedType).RemoveDiscriminatorValue();
                 }
             }
         }
@@ -3327,18 +3327,6 @@ public class EntityType : TypeBase, IMutableEntityType, IConventionEntityType, I
             == property?.Name
                 ? property
                 : (Property?)((IReadOnlyEntityType)this).FindDiscriminatorProperty();
-
-        static void RemoveDiscriminatorValue(IReadOnlyEntityType entityType, ConfigurationSource configurationSource)
-        {
-            if (configurationSource is ConfigurationSource.Convention or ConfigurationSource.DataAnnotation)
-            {
-                ((IConventionEntityType)entityType).RemoveDiscriminatorValue(configurationSource == ConfigurationSource.DataAnnotation);
-            }
-            else
-            {
-                ((IMutableEntityType)entityType).RemoveDiscriminatorValue();
-            }
-        }
     }
 
     private void CheckDiscriminatorProperty(Property? property)

@@ -1,13 +1,15 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 namespace Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 /// <summary>
-///     Provides a simple API for configuring a <see cref="IMutableDbFunction" /> that an entity type is mapped to.
+///     Provides a simple API for configuring a <see cref="IMutableStoredProcedure" /> that an entity type is mapped to.
 /// </summary>
 /// <typeparam name="TEntity">The entity type being configured.</typeparam>
-public class TableValuedFunctionBuilder<TEntity> : TableValuedFunctionBuilder, IInfrastructure<EntityTypeBuilder<TEntity>>
+public class NamingStoredProcedureBuilder<TEntity> : NamingStoredProcedureBuilder, IInfrastructure<EntityTypeBuilder<TEntity>>
     where TEntity : class
 {
     /// <summary>
@@ -17,8 +19,8 @@ public class TableValuedFunctionBuilder<TEntity> : TableValuedFunctionBuilder, I
     ///     doing so can result in application failures when updating to a new Entity Framework Core release.
     /// </summary>
     [EntityFrameworkInternal]
-    public TableValuedFunctionBuilder(IMutableDbFunction function, EntityTypeBuilder<TEntity> entityTypeBuilder)
-        : base(function, entityTypeBuilder)
+    public NamingStoredProcedureBuilder(IMutableStoredProcedure sproc, EntityTypeBuilder<TEntity> entityTypeBuilder)
+        : base(sproc, entityTypeBuilder)
     {
     }
 
@@ -33,8 +35,8 @@ public class TableValuedFunctionBuilder<TEntity> : TableValuedFunctionBuilder, I
     /// </remarks>
     /// <param name="name">The name of the function in the database.</param>
     /// <returns>The same builder instance so that multiple configuration calls can be chained.</returns>
-    public new virtual TableValuedFunctionBuilder<TEntity> HasName(string name)
-        => (TableValuedFunctionBuilder<TEntity>)base.HasName(name);
+    public new virtual NamingStoredProcedureBuilder<TEntity> HasName(string name)
+        => (NamingStoredProcedureBuilder<TEntity>)base.HasName(name);
 
     /// <summary>
     ///     Sets the schema of the database function.
@@ -44,33 +46,33 @@ public class TableValuedFunctionBuilder<TEntity> : TableValuedFunctionBuilder, I
     /// </remarks>
     /// <param name="schema">The schema of the function in the database.</param>
     /// <returns>The same builder instance so that multiple configuration calls can be chained.</returns>
-    public new virtual TableValuedFunctionBuilder<TEntity> HasSchema(string? schema)
-        => (TableValuedFunctionBuilder<TEntity>)base.HasSchema(schema);
-    
-    /// <summary>
-    ///     Marks whether the database function is built-in.
-    /// </summary>
-    /// <remarks>
-    ///     See <see href="https://aka.ms/efcore-docs-database-functions">Database functions</see> for more information and examples.
-    /// </remarks>
-    /// <param name="builtIn">The value indicating whether the database function is built-in.</param>
-    /// <returns>The same builder instance so that multiple configuration calls can be chained.</returns>
-    public new virtual TableValuedFunctionBuilder<TEntity> IsBuiltIn(bool builtIn = true)
-        => (TableValuedFunctionBuilder<TEntity>)base.IsBuiltIn(builtIn);
+    public new virtual NamingStoredProcedureBuilder<TEntity> HasSchema(string? schema)
+        => (NamingStoredProcedureBuilder<TEntity>)base.HasSchema(schema);
 
     /// <summary>
-    ///     Returns an object that can be used to configure a parameter with the given name.
-    ///     If no parameter with the given name exists, then a new parameter will be added.
+    ///     Resets the currently configured parameter order.
     /// </summary>
-    /// <remarks>
-    ///     See <see href="https://aka.ms/efcore-docs-database-functions">Database functions</see> for more information and examples.
-    /// </remarks>
-    /// <param name="name">The parameter name.</param>
-    /// <param name="buildAction">An action that performs configuration of the parameter.</param>
-    /// <returns>The builder to use for further parameter configuration.</returns>
     /// <returns>The same builder instance so that multiple configuration calls can be chained.</returns>
-    public new virtual TableValuedFunctionBuilder<TEntity> HasParameter(string name, Action<DbFunctionParameterBuilder> buildAction)
-        => (TableValuedFunctionBuilder<TEntity>)base.HasParameter(name, buildAction);
+    public new virtual NamingStoredProcedureBuilder<TEntity> WithNewParameterOrder()
+        => (NamingStoredProcedureBuilder<TEntity>)base.WithNewParameterOrder();
+
+    /// <summary>
+    ///     Configures a new parameter if no parameter mapped to the given property exists.
+    /// </summary>
+    /// <param name="propertyName">The property name.</param>
+    /// <returns>The same builder instance so that multiple configuration calls can be chained.</returns>
+    public new virtual NamingStoredProcedureBuilder<TEntity> HasParameter(string propertyName)
+        => (NamingStoredProcedureBuilder<TEntity>)base.HasParameter(propertyName);
+
+    /// <summary>
+    ///     Configures a new parameter if no parameter mapped to the given property exists.
+    /// </summary>
+    /// <param name="propertyName">The parameter name.</param>
+    /// <param name="buildAction">An action that performs configuration of the parameter.</param>
+    /// <returns>The same builder instance so that multiple configuration calls can be chained.</returns>
+    public new virtual NamingStoredProcedureBuilder<TEntity> HasParameter(
+        string propertyName, Action<StoredProcedureParameterBuilder> buildAction)
+        => (NamingStoredProcedureBuilder<TEntity>)base.HasParameter(propertyName, buildAction);
 
     EntityTypeBuilder<TEntity> IInfrastructure<EntityTypeBuilder<TEntity>>.Instance => EntityTypeBuilder;
 }
